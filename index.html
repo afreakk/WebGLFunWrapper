@@ -1,0 +1,98 @@
+
+<!DOCTYPE HTML> 
+<html> 
+	<head> 
+		<meta charset="utf-8"> 
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<title>Terragen</title> 
+		
+		<style> 
+			body {
+				background-color: #000000;
+				margin: 0px;
+				overflow: hidden;
+			}
+		</style> 
+	</head> 
+	<body> 
+ 
+		<canvas></canvas>
+		<div id="info"></div> 
+ 
+		<script id="Tvs" type="x-shader/vertex"> 
+ 
+			attribute vec2 grid;
+            attribute float yPoint;
+            uniform mat4 perspective;
+			uniform float time;
+            varying vec3 pos;
+ 
+			void main() {
+                float mountainHeight = 30.0;
+                vec3 camPos = vec3(0.0, 75.0, 25.0);
+                pos = vec3(grid.x, (yPoint/2.0+0.5)*mountainHeight- (grid.y/1.1), grid.y);
+				gl_Position = perspective*vec4( pos-camPos, 1.0 );
+                pos.y = yPoint/2.0+0.5;
+ 
+			}
+ 
+		</script> 
+ 
+		<script id="Gvs" type="x-shader/vertex"> 
+ 
+			attribute vec3 vertexPos;
+            uniform mat4 perspective;
+            varying vec3 pos;
+ 
+			void main() {
+                vec3 camPos = vec3(0.0, 75.0, 25.0);
+				gl_Position = perspective*vec4( vertexPos-camPos, 1.0 );
+                pos = vertexPos;
+ 
+			}
+ 
+		</script> 
+
+		<script id="Tfs" type="x-shader/fragment"> 
+ 
+			uniform float time;
+			uniform vec2 resolution;
+            varying vec3 pos;
+			void main( void ) {
+                vec4 endC = vec4(0.0,0.0,0.0,1.0);
+                endC.b += 1.0-pos.y;
+                endC.g += pos.y;
+                float yellow = 1.0-abs(endC.b-endC.g);
+                endC.r += yellow;
+                endC.g += yellow;
+                gl_FragColor = endC;
+ 
+			}
+ 
+		</script> 
+
+		<script id="Gfs" type="x-shader/fragment"> 
+ 
+			uniform float time;
+			uniform vec2 resolution;
+            varying vec3 pos;
+			void main( void ) {
+                vec4 endC = vec4(cos(pos.x+time),sin(pos.y+time),tan(pos.z+time),1.0);
+                gl_FragColor = endC;
+ 
+			}
+ 
+		</script> 
+        <script src='ExtLibs/gl-matrix-min.js'></script>
+        <script src='ExtLibs/perlinsimplexnoise.js'></script>
+        <script src='3DObjects/shape.js'></script>
+        <script src='3DObjects/terrain.js'></script>
+        <script src='ShaderObjects/terrainshader.js'></script>
+        <script src='ShaderObjects/generalshader.js'></script>
+        <script src='Core/shader.js'></script>
+        <script src='Core/keyhandler.js'></script>
+        <script src='Core/managers.js'></script>
+        <script src='Scenes/terrainscene.js'></script>
+        <script src='main.js'></script>
+	</body> 
+</html>
